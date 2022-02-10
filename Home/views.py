@@ -30,9 +30,9 @@ def homeview(request):
             np.uint8(prediction.reshape(256, 256)*255)).convert('L')
         predict_image = predict_image.convert('RGB')
 
-        # print(np.array(predict_image).shape)
-        # image.paste(image, (0, 0), predict_image)
-        predict_image.save('o.png')
+        print(np.array(predict_image).shape)
+        image.paste(predict_image)
+        image.save('o.png')
 
         return HttpResponse('done', content_type="text/plain")
         # response = {"msg": "Error processing the image!!!"}
