@@ -18,9 +18,11 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from Home.views import homeview, MainView
+from frontend.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',homeview,name='home'),
+    path('home/',home,name='real-home'),
     path('api/',MainView.as_view(),name='api'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

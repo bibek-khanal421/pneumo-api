@@ -7,14 +7,15 @@
     <title>Document</title>
 </head>
 <body>
-    <form method='POST' enctype="multipart/form-data">
-        {% csrf_token %}
-        {{form}}
-        <button type="submit">Submit</button>
-    </form>
-    {% if image %}
-    <img src={{image.url}} alt="">
-    {% endif %}
-    
+    <style>
+        .img
+        {
+            width: 100px, 
+            height: 100px;
+        }
+    </style>
+<img src='{{response.inputImage}}' alt="">
+<img src='{{response.outputImage}}' alt="">
+<img src='{{response.outputMask}}' alt="">
 </body>
 </html>
