@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from Home.views import homeview
+from Home.views import homeview, MainView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',homeview,name='home'),
+    path('api/',MainView.as_view(),name='api'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
