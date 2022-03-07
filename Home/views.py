@@ -12,8 +12,10 @@ from rest_framework import status
 from rest_framework.response import Response
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib
 import os
 import cv2
+from .api_handler import api_handler
 import sys
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -84,35 +86,16 @@ class MainView(APIView):
         if serializer.is_valid():
             imaged=serializer.validated_data['inputImage']
             image = Image.open(imaged)
-            image = image.resize((256, 256), Image.ANTIALIAS).convert('RGB')
-            model = get_model()
-            model.load_weights(settings.WEIGHT_PATH)
-            prediction = model.predict(np.array(image).reshape(1, 256, 256, 3)/255)
-            predict_image = Image.fromarray(
-            np.uint8(prediction.reshape(256, 256)*255)).convert('L')
-            predict_image=np.dstack((np.array(predict_image), np.zeros((256,256,1)), np.zeros((256,256,1)).reshape(256,256,1))).reshape(256,256,3)
-            # predict_image=np.concatenate((np.zeros((256,256)), np.zeros((256,256)), np.array(predict_image).reshape(256,256)), axis=0).reshape(256,256,3)
-            predict_image=Image.fromarray(np.uint8(predict_image))
-            predict_image=convertToFileField(predict_image)
-            # plt.imshow(image,cmap='gray',alpha=1)
-            # plt.imshow(predict_image, cmap='PRGn', alpha=0.25)
-            # xy=Image.frombytes('RGB', 
-            # plt.canvas.get_width_height(),plt.canvas.tostring_rgb())
-            # img_io=StringIO()
-            # predict_image.save(img_io, format='JPEG')
-            # img_content=ContentFile(img_io.getvalue(),'img5.jpg')
-
-            # final_image=overlay_masks( [np.array(predict_image).reshape(256,256,1)],np.array(image))
-            # final_image.savefig('o.png')
-            OutputImage(inputImage=imaged, outputMask=predict_image, outputImage=imaged).save()
-            serializer.validated_data['outputImage']=predict_image
-            serializer.validated_data['outputMask']=imaged
+            image = np.array(image.resize((256, 256), Image.ANTIALIAS).convert('RGB'))
+            prediction = api_handler(image)
+            prediction = Image.fromarray(prediction)
+            prediction.save("o.png")
+            prediction=convertToFileField(prediction)
+            OutputImage(inputImage=imaged, outputMask=prediction, outputImage=prediction).save()
+            serializer.validated_data['outputImage']=prediction
+            serializer.validated_data['outputMask']=prediction
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-            # serializer=OutputSerializer(outputMask=predict_image, outputImage=xy)
-            # serializer.save()
-            # return HttpResponse('done', content_type="text/plain")
-            # return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, format=None):
