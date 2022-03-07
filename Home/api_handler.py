@@ -69,8 +69,9 @@ def api_handler(image):
     prediction = np.mean(tmp, axis=2).reshape(1, width, height, mask_channel)
     prediction = post_process_image(prediction, top_score_threshold=top_thresh,
                                     bot_score_threshold=bot_thresh, min_contour_area=min_area)
+    prediction_temp=prediction.copy()
     prediction = overlay(image[0], prediction)
-    return prediction
+    return prediction, np.array(prediction_temp*255).reshape(width, height)
 
 
 # if __name__ == "__main__":

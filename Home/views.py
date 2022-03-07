@@ -34,52 +34,6 @@ def convertToFileField(image):
                                 sys.getsizeof(output), None)
     return new_pic
 
-# create a overlaying of mask over the image
-def overlay_mask(mask, image):
-    rgb_mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-    img = Image.fromarray(rgb_mask)
-    img = img.resize((image.shape[1], image.shape[0]))
-    img = np.array(img)
-    img = cv2.addWeighted(image, 0.5, img, 0.5, 0)
-    print(type(img))
-    return img
-
-
-@api_view(['GET', 'POST'])
-def homeview(request):
-    if request.method == 'POST':
-        image = request.data['images']
-        # obj=inputSerializer(image=image)
-        # obj.save()
-        image = Image.open(image)
-        image = image.resize((256, 256), Image.ANTIALIAS).convert('RGB')
-        model = get_model()
-        model.load_weights(settings.WEIGHT_PATH)
-        prediction = model.predict(np.array(image).reshape(1, 256, 256, 3)/255)
-        predict_image = Image.fromarray(
-            np.uint8(prediction.reshape(256, 256)*255)).convert('L')
-        predict_image=overlay_mask(image, predict_image)
-        predict_image.save('output.jpeg')
-        # predict_image=np.dstack((np.array(predict_image), np.zeros((256,256,1)), np.zeros((256,256,1)).reshape(256,256,1))).reshape(256,256,3)
-        # predict_image=np.concatenate((np.zeros((256,256)), np.zeros((256,256)), np.array(predict_image).reshape(256,256)), axis=0).reshape(256,256,3)
-        # predict_image=Image.fromarray(np.uint8(predict_image))
-        # plt.imshow(image,cmap='gray',alpha=1)
-        # plt.imshow(predict_image, cmap='PRGn', alpha=0.25)
-        # plt.savefig('o.png')
-
-        final_image=overlay_masks( [np.array(predict_image).reshape(256,256,1)],np.array(image))
-        final_image.savefig('o.png')
-        # data=input_serializer(image=image)
-        # data.save()
-        return HttpResponse('done', content_type="text/plain")
-        # response = {"msg": "Error processing the image!!!"}
-        # json_data = JSONRenderer().render(response)
-        # return HttpResponse(json_data, content_type="application/json")
-    response = {"msg": "Error processing the image!!!"}
-    json_data = JSONRenderer().render(response)
-    return HttpResponse(json_data, content_type="application/json")
-
-
 class MainView(APIView):
     def post(self, request, format=None):
         serializer=inputSerializer(data=request.data)
@@ -87,13 +41,15 @@ class MainView(APIView):
             imaged=serializer.validated_data['inputImage']
             image = Image.open(imaged)
             image = np.array(image.resize((256, 256), Image.ANTIALIAS).convert('RGB'))
-            prediction = api_handler(image)
+            prediction, prediction_mask = api_handler(image)
+            prediction_mask=Image.fromarray(prediction_mask)
             prediction = Image.fromarray(prediction)
             prediction.save("o.png")
             prediction=convertToFileField(prediction)
-            OutputImage(inputImage=imaged, outputMask=prediction, outputImage=prediction).save()
+            prediction_mask=convertToFileField(prediction_mask)
+            OutputImage(inputImage=imaged, outputMask=prediction_mask, outputImage=prediction).save()
             serializer.validated_data['outputImage']=prediction
-            serializer.validated_data['outputMask']=prediction
+            serializer.validated_data['outputMask']=prediction_mask
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
