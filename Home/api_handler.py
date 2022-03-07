@@ -5,10 +5,11 @@ from tensorflow import keras
 import segmentation_models as sm
 sm.set_framework('tf.keras')
 sm.framework()
-
+import os
+current_directory = os.getcwd()
 # defining the model path
-model_path_0 = r"C:\Users\SonOfAnton\Desktop\Pneumothorax Project\Scripts\pneumo-api\Home\ml_models\Adam-Dice\segmentation.h5"
-model_path_1 = r"C:\Users\SonOfAnton\Desktop\Pneumothorax Project\Scripts\pneumo-api\Home\ml_models\dice_90\segmentation.h5"
+model_path_0 = os.path.join(current_directory,"Home\ml_models\Adam-Dice\segmentation.h5")
+model_path_1 = os.path.join(current_directory,"Home\ml_models\dice_90\segmentation.h5")
 
 # defining the parameters
 width = 256
