@@ -19,7 +19,6 @@ from .api_handler import api_handler
 import sys
 from io import BytesIO
 from django.core.files.base import ContentFile
-from segmentation_mask_overlay import overlay_masks
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # a function to convert a pillow IMG file to file field django 
