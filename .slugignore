@@ -1,2 +1,4 @@
 *.h5
 /ml_models
+/static
+/media
