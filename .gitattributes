@@ -1,3 +1,5 @@
 .h5 filter=lfs diff=lfs merge=lfs -text
 /Home/ml_models/Adam-Dice/segmentation.h5 filter=lfs diff=lfs merge=lfs -text
 /Home/ml_models/dice_90/segmentation.h5 filter=lfs diff=lfs merge=lfs -text
+C:UsersAdminDesktoppneumoScriptspneumo-apiHomeml_modelsdice_90segmentation.h5 filter=lfs diff=lfs merge=lfs -text
+Homeml_modelsdice_90segmentation.h5 filter=lfs diff=lfs merge=lfs -text

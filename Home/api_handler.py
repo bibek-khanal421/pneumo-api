@@ -9,7 +9,7 @@ import os
 current_directory = os.getcwd()
 # defining the model path
 model_path_0 = os.path.join(current_directory,"Home\ml_models\Adam-Dice\segmentation.h5")
-# model_path_1 = os.path.join(current_directory,"Home\ml_models\dice_90\segmentation.h5")
+model_path_1 = os.path.join(current_directory,"Home\ml_models\dice_90\segmentation.h5")
 
 # defining the parameters
 width = 256
@@ -60,11 +60,11 @@ def api_handler(image):
     # initializing the prediction
     prediction_0 = np.array(model.predict(
         image/255)).reshape(width, height, mask_channel)
-    # model = get_model(model_path_1)
+    model = get_model(model_path_1)
     # initializing the prediction
-    # prediction_1 = np.array(model.predict(
-    #     image/255)).reshape(width, height, mask_channel)
-    tmp = np.stack((prediction_0, prediction_0), axis=2)
+    prediction_1 = np.array(model.predict(
+        image/255)).reshape(width, height, mask_channel)
+    tmp = np.stack((prediction_0, prediction_1), axis=2)
     tmp = np.array(tmp).reshape(width, height, 2)
     # combining the predictions
     prediction = np.mean(tmp, axis=2).reshape(1, width, height, mask_channel)
